@@ -5,4 +5,8 @@ url = [
 
 import webbrowser
 
-webbrowser.open(url[0])  # Go to example.c
+#webbrowser.open(url[0])  # Go to example.c
+
+import mechanicalsoup
+browser = mechanicalsoup.StatefulBrowser()
+print(browser.open(url[0]))
