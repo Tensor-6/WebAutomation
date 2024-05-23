@@ -10,3 +10,4 @@ import webbrowser
 import mechanicalsoup
 browser = mechanicalsoup.StatefulBrowser()
 print(browser.open(url[0]))
+browser.show()
