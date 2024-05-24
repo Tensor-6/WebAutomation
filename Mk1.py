@@ -24,17 +24,19 @@ global encry
 encry = crypt.StringEncryptor(input('Encryption Key: '))
 
 class RegBot:
-       def __init__(self):
-              self.email = encry.encrypt(str(input('Enter MySurrey email: ')))
-              self.password = encry.encrypt(str(input('Enter MySurrey password: ')))
+    def __init__(self):
+       self.email = encry.encrypt(str(input('Enter MySurrey email: ')))
+       self.password = encry.encrypt(str(input('Enter MySurrey password: ')))
        self.cardnum = encry.encrypt(str(input('Enter your credit card number: ')))
        self.cardnam = encry.encrypt(str(input('Enter your credit card name: ')))
        self.carddate = encry.encrypt(str(input('Enter the expiry date (mm/yy): ')))
        self.cardcvc = encry.encrypt(str(input('Enter your credit card cvc: ')))
+    def navigate(self):
+       self.driver = webdriver.Chrome()
+       self.driver.get(url[1] )
 
 r = RegBot()
-driver = webdriver.Chrome()
-driver.get(url[1] )
+
 time.sleep(10)
 #anchor = driver.find_element(By.CLASS_NAME, 'bm-button bm-book-button')
 #anchor.click()
