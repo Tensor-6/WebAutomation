@@ -1,12 +1,17 @@
+#simple moudle downloader
+#add cross-platofrm capability
 import ModLoad
-import time
 depen = ['selenium',
        'cryptography',
-       'webdriver-manager'
+       'webdriver-manager',
+       'schedule'
        ]
 #ModLoad.importDependencies(depen)
 
+import time
 import base64
+import schedule
+import datetime
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -51,6 +56,14 @@ class BadmintonRegBot:
        SignInBtn.click()
        time.sleep(6000)
        driver.quit()
+
+class OverArch:
+    def __init__(self, password):
+        self.password = input('password: ')
+        self.BadRB =BadmintonRegBot(self.password)
+    #def FridayBadmintonLoop(self):
+        #loope weekly tues 7:15pm
+
 
 r = RegBot()
 r.navigate()
