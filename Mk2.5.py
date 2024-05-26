@@ -19,11 +19,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from cryptography.fernet import Fernet
+
+#custom module imports
 import ParisCrypts as crypt
+import Scheduler as sched
 
 url = [
        "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c1a62643-ec0e-a373-347f-14d0a91315fb&occurrenceDate=20240524",
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=32db5eaa-69d6-f210-e8ce-40a81856dff7&occurrenceDate=20240524"
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=4eccf5ef-4b16-4e71-ae7d-ed4cdff075ac&occurrenceDate=20240527"
        ]
 debug = True
 
@@ -58,15 +61,17 @@ class BadmintonRegBot:
        driver.quit()
 
 class OverArch:
-    def __init__(self, password):
+    def __init__(self):
         self.password = input('password: ')
         self.BadRB =BadmintonRegBot(self.password)
-    #def FridayBadmintonLoop(self):
+    def FridayBadmintonLoop(self):
         #loope weekly tues 7:15pm
+        self.sch = sched.Scheduler()
+        self.sch.schedule_task('sunday', '14:23', 3, 'seconds', self.BadRB.navigate)
 
 
-r = RegBot()
-r.navigate()
+r = OverArch()
+r.FridayBadmintonLoop()
 """
 time.sleep(10)
 anchor_tag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
