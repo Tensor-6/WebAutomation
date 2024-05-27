@@ -4,9 +4,11 @@ import ModLoad
 depen = ['selenium',
        'cryptography',
        'webdriver-manager',
-       'schedule'
+       'schedule',
+       'mouse'
        ]
 #ModLoad.importDependencies(depen)
+
 import os
 import json
 import time
@@ -14,13 +16,15 @@ import base64
 import schedule
 import datetime
 import selenium
-from selenium import webdriver
+import pyautogui
+import random as r
+import undetected_chromedriver as uc
+from cryptography.fernet import Fernet
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from cryptography.fernet import Fernet
 
 #custom module imports
 import ParisCrypts as crypt
@@ -28,7 +32,9 @@ import Scheduler as sched
 
 url = [
        "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=63f4596d-b62f-2e76-5622-ee88a741d041&occurrenceDate=20240527",
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c914f521-f459-c203-28c3-8536cab22143&occurrenceDate=20240527"
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c914f521-f459-c203-28c3-8536cab22143&occurrenceDate=20240527",
+       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=741fc74c-20eb-44bf-f8b1-191755b2b8f4&occurrenceDate=20240528',
+       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=63f4596d-b62f-2e76-5622-ee88a741d041&occurrenceDate=20240527'
        ]
 debug = True
 
@@ -76,9 +82,9 @@ class BadmintonRegBot:
            print(self.cardcvcb)
 
     def navigate(self):
-        driver = webdriver.Chrome()
+        driver = uc.Chrome()
         driver.maximize_window()
-        driver.get(url[1]) #add date funct
+        driver.get(url[3]) #add date funct
         #time.sleep(10)
         regiTag = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.bm-button.bm-book-button')))
         #regiTag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
@@ -100,12 +106,27 @@ class BadmintonRegBot:
         #try :
         print(contBtn)
         contBtn.click()
+        nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Add to Cart' and @class='bm-button']")))
+        position = nextBtn.location
+        x = position['x']
+        y = position['y']
+        print(f'Element position: x={x}, y={y}')
+        size = nextBtn.size
+        width = size['width']
+        height = size['height']
+        print(f'Element size: width={width}, height={height}')
+        x = position['x'] + size['width'] / 2
+        y = position['y'] + size['height'] / 2
+        time.sleep(1)
+        pyautogui.moveTo(x, y+700)
+        pyautogui.click()
         #except:
-        
+        '''
         time.sleep(2)
         nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'bm-button')))
         nextBtn.click()
         #checkout card
+        
         cardNameF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-name-151')))
         cardNameF.send_keys(self.encry.decrypt(self.cardname))
         cardNumbF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-number-151')))
@@ -117,7 +138,7 @@ class BadmintonRegBot:
         selectEXY = Select(cardExpDa)
         selectEXY.select_by_value(self.encry.decrypt(self.cardyear))
         #checkout billing
-
+        '''
         time.sleep(6000)
         driver.quit()
 
