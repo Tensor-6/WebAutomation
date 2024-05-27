@@ -7,11 +7,14 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 
 class StringEncryptor:
-    def __init__(self, password, salt=None):
+    def __init__(self, password, regenSalt, salt=None):
         """Initializes the StringEncryptor with a password and optional salt."""
         self.password = password.encode()
-        if salt is None:
-            salt = os.urandom(16)
+        if salt is None or regenSalt == 'true':
+            salt = os.urandom(16) 
+            saltf = open('salt.txt', 'w')
+            print('success create salt')
+            saltf.write(base64.urlsafe_b64encode(salt).decode('utf-8'))
         self.salt = salt
         self.key = self._derive_key(self.password, self.salt)
         self.fernet = Fernet(self.key)

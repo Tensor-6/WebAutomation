@@ -27,8 +27,8 @@ import ParisCrypts as crypt
 import Scheduler as sched
 
 url = [
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c1a62643-ec0e-a373-347f-14d0a91315fb&occurrenceDate=20240524",
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=4eccf5ef-4b16-4e71-ae7d-ed4cdff075ac&occurrenceDate=20240527"
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=63f4596d-b62f-2e76-5622-ee88a741d041&occurrenceDate=20240527",
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c914f521-f459-c203-28c3-8536cab22143&occurrenceDate=20240527"
        ]
 debug = True
 
@@ -52,9 +52,9 @@ class BadmintonRegBot:
                 'password':self.encry.encrypt(str(input('Enter MySurrey password: '))),
                 'cardName':self.encry.encrypt(str(input('Enter your credit card number: '))),
                 'cardNumb':self.encry.encrypt(str(input('Enter your credit card name: '))),
-                'cardExpd':self.encry.encrypt(str(input('Enter the expiry date (mm/yy): '))),
-                'cardExpm':self.encry.encrypt(str(input('Enter card expird month(1-12): '))),
-                'cardCvcB':self.encry.encrypt(str(input('Enter your credit card cvc: '))),
+                'cardExpM':self.encry.encrypt(str(input('Enter the expiry month(1-12): '))),
+                'cardExpY':self.encry.encrypt(str(input('Enter card expiry year: '))),
+                'cardCvcB':self.encry.encrypt(str(input('Card Cvc: '))),
                 'regiMemb':self.encry.encrypt(str(input('Enter member: ')))
             }
             with open(preset, 'w') as json_file:
@@ -68,8 +68,8 @@ class BadmintonRegBot:
         self.password = data['password']
         self.cardname = data['cardName']
         self.cardnumb = data['cardNumb']
-        self.carddate = data['cardExpd']
-        self.cardmont = data['cardExpm']
+        self.cardmont = data['cardExpM']
+        self.cardyear = data['cardExpY']
         self.cardcvcb = data['cardCvcB']
         self.regiMemb = data['regiMemb']
         if debug:
@@ -77,33 +77,45 @@ class BadmintonRegBot:
 
     def navigate(self):
         driver = webdriver.Chrome()
+        driver.maximize_window()
         driver.get(url[1]) #add date funct
         #time.sleep(10)
         regiTag = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.bm-button.bm-book-button')))
         #regiTag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
         regiTag.click()
-        #time.sleep(5)
+        time.sleep(2)
         LogInEmlIn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, 'emailid')))
         LogInEmlIn.send_keys(self.encry.decrypt(self.MySEmail))
+        time.sleep(2)
         LogInPslIn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'loginradius-login-password')))
         LogInPslIn.send_keys(self.encry.decrypt(self.password))
+        time.sleep(2)
         SignInBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'loginradius-validate-login')))
         SignInBtn.click()
+        time.sleep(2)
         memberBtn = driver.find_element(By.ID, WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb)}']"))).get_attribute("for"))
         memberBtn.click()
+        time.sleep(2)
         contBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Next']"))) 
-        try :
-            contBtn.click()
-        except:
-            time.sleep(1000)
+        #try :
+        print(contBtn)
+        contBtn.click()
+        #except:
+        
+        time.sleep(2)
         nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'bm-button')))
         nextBtn.click()
         #checkout card
-        cardNameF = WebDriverWait(DRIVER, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-name-151')))
+        cardNameF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-name-151')))
         cardNameF.send_keys(self.encry.decrypt(self.cardname))
-        cardNumbF = WebDriverWait(DRIVER, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-number-151')))
+        cardNumbF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-number-151')))
         cardNumbF.send_keys(self.encry.decrypt(self.cardnumb))
-
+        cardExpMo = WebDriverWait(driver, 20).until(EC.element_to_be_selected((By.ID, 'expiry-month-151')))
+        selectEXM = Select(cardExpDa)
+        selectEXM.select_by_value(self.encry.decrypt(self.cardmont))
+        cardExpYr = WebDriverWait(driver, 20).until(EC.element_to_be_selected((By.ID, 'expiry-month-151')))
+        selectEXY = Select(cardExpDa)
+        selectEXY.select_by_value(self.encry.decrypt(self.cardyear))
         #checkout billing
 
         time.sleep(6000)
@@ -124,15 +136,3 @@ r.FridayBadmintonLoop()
 '''
 b = BadmintonRegBot('p')
 b.navigate()
-"""
-time.sleep(10)
-anchor_tag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
-anchor_tag.click()
-time.sleep(5)
-LogInEmlIn = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, 'emailid')))
-LogInEmlIn.send_keys('testa@g.vb')
-LogInPslIn = driver.find_element(By.ID, 'loginradius-login-password')
-LogInPslIn.send_keys('testa@g.vb')
-SignInBtn =  driver.find_element(By.ID, 'loginradius-validate-login')
-time.sleep(6000)
-driver.quit()"""
