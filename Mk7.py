@@ -31,21 +31,23 @@ import ParisCrypts as crypt
 import Scheduler as sched
 
 url = [
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=63f4596d-b62f-2e76-5622-ee88a741d041&occurrenceDate=20240527",
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=e288ed98-37d9-df59-7981-f5b1ef1bb9d7&occurrenceDate=20240530",
        "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c914f521-f459-c203-28c3-8536cab22143&occurrenceDate=20240527",
-       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=741fc74c-20eb-44bf-f8b1-191755b2b8f4&occurrenceDate=20240528',
-       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=63f4596d-b62f-2e76-5622-ee88a741d041&occurrenceDate=20240527'
+       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=158b12cd-c312-fcd9-d6c9-91b9db2665ba&occurrenceDate=20240528',
+       'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=db1b10c3-c74c-496b-a154-961dbd3a9839&occurrenceDate=20240527'
        ]
-debug = True
+debug = False
 
 
 class BadmintonRegBot:
     def __init__(self, password):
         try:
             saltf = open('salt.txt', 'r')
-            print('sucess open salt')
+            if debug:
+                print('sucess open salt')
             salt = base64.urlsafe_b64decode(saltf.read().encode('utf-8'))
-            print(salt)
+            if debug:
+                print(salt)
         except:
             salt = None
         self.encry = crypt.StringEncryptor(password, input('Regen Salt(true/false): ').lower(), salt)
@@ -103,8 +105,6 @@ class BadmintonRegBot:
         memberBtn.click()
         time.sleep(2)
         contBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Next']"))) 
-        #try :
-        print(contBtn)
         contBtn.click()
         nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Add to Cart' and @class='bm-button']")))
         position = nextBtn.location
@@ -118,16 +118,25 @@ class BadmintonRegBot:
         x = position['x'] + size['width'] / 2
         y = position['y'] + size['height'] / 2
         time.sleep(1)
-        pyautogui.moveTo(x, y+700)
+        pyautogui.moveTo(x, y+70)
         pyautogui.click()
-        #except:
-        
+
         time.sleep(2)
-        nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'bm-button')))
-        nextBtn.click()
-        #checkout card
-        
-        cardNameF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-name-151')))
+        #checkout
+        driver.switch_to.frame(WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe.online-store'))))
+        wait = WebDriverWait(driver, 10)
+        print('success wait6')
+        wait = WebDriverWait(driver, 20)  # Increased wait time
+        cardNameF = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.nameOnCard"][class*="floating-label transform empty"]')))
+        cardNameF.send_keys(self.encry.decrypt(self.cardname))
+        print('success sendkey')
+        time.sleep(5)
+        '''except:
+            print(555)
+            pass
+        ''''''
+        cardNameF = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.nameOnCard"][class*="floating-label transform empty"][id^="credit-card-holder-name"]')))
+
         cardNameF.send_keys(self.encry.decrypt(self.cardname))
         cardNumbF = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'credit-card-holder-number-151')))
         cardNumbF.send_keys(self.encry.decrypt(self.cardnumb))
@@ -138,9 +147,26 @@ class BadmintonRegBot:
         selectEXY = Select(cardExpDa)
         selectEXY.select_by_value(self.encry.decrypt(self.cardyear))
         #checkout billing
-        
+        '''
         time.sleep(6000)
         driver.quit()
+    
+    def simClickID(self, tag):
+        time.sleep(2)
+        nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, tag)))
+        position = nextBtn.location
+        x = position['x']
+        y = position['y']
+        print(f'Element position: x={x}, y={y}')
+        size = nextBtn.size
+        width = size['width']
+        height = size['height']
+        print(f'Element size: width={width}, height={height}')
+        x = position['x'] + size['width'] / 2
+        y = position['y'] + size['height'] / 2
+        time.sleep(1)
+        pyautogui.moveTo(x, y+70)
+        pyautogui.click()
 
 class OverArch:
     def __init__(self):
