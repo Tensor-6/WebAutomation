@@ -101,10 +101,11 @@ class BadmintonRegBot:
         SignInBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'loginradius-validate-login')))
         SignInBtn.click()
         time.sleep(2)
+        wait = WebDriverWait(driver, 20)
         try:
-            memberBtn = driver.find_element(By.ID, WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb)}']"))).get_attribute("for"))
+            memberBtn = driver.find_element(By.ID, wait.until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb)}']"))).get_attribute("for"))
         except:
-            memberBtn = driver.find_element(By.ID, WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb) + ' (You)'}']"))).get_attribute("for"))
+            memberBtn = driver.find_element(By.ID, wait.until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb) + ' (You)'}']"))).get_attribute("for"))
         memberBtn.click()
         time.sleep(2)
         contBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Next']"))) 
