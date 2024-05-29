@@ -32,7 +32,7 @@ import Scheduler as sched
 
 url = [
        "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=e288ed98-37d9-df59-7981-f5b1ef1bb9d7&occurrenceDate=20240530",
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c914f521-f459-c203-28c3-8536cab22143&occurrenceDate=20240527",
+       "https://cityofsurrey.perfectmind.com/23615/Menu/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=ff873403-4172-f659-e3b7-157285f210c6&occurrenceDate=20240531",
        'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=158b12cd-c312-fcd9-d6c9-91b9db2665ba&occurrenceDate=20240528',
        'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=db1b10c3-c74c-496b-a154-961dbd3a9839&occurrenceDate=20240527'
        ]
@@ -86,7 +86,7 @@ class BadmintonRegBot:
     def navigate(self):
         driver = uc.Chrome()
         driver.maximize_window()
-        driver.get(url[2]) #add date funct
+        driver.get(url[0]) #add date funct
         #time.sleep(10)
         regiTag = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.bm-button.bm-book-button')))
         #regiTag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
@@ -110,7 +110,7 @@ class BadmintonRegBot:
         time.sleep(2)
         contBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Next']"))) 
         contBtn.click()
-        nextBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Add to Cart' and @class='bm-button']")))
+        nextBtn = WebDriverWait(driver, 2000).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Add to Cart' and @class='bm-button']")))
         position = nextBtn.location
         x = position['x']
         y = position['y']
@@ -127,7 +127,7 @@ class BadmintonRegBot:
 
         time.sleep(2)
         #checkout
-        driver.switch_to.frame(WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe.online-store'))))
+        driver.switch_to.frame(WebDriverWait(driver, 2000).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe.online-store'))))
         cardNameF = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.nameOnCard"][class*="floating-label transform empty"]')))
         cardNameF.send_keys(self.encry.decrypt(self.cardname))
         time.sleep(2)
