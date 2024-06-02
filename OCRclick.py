@@ -1,8 +1,9 @@
 import easyocr
 import pyautogui
 import time
+from mouse import get_position
 
-def click_text_on_screen(text, delay=1):
+def move_text_on_screen(text, delay=1):
     def find_text_coordinates(image, text):
         # Create an EasyOCR reader
         reader = easyocr.Reader(['en'])
@@ -35,13 +36,15 @@ def click_text_on_screen(text, delay=1):
 
         # Move the mouse to the center of the bounding box and click
         pyautogui.moveTo(center_x, center_y, duration=delay)
-        pyautogui.click()
+        #pyautogui.click()
 
-        print(f"'{text}' button clicked at coordinates: {center_x}, {center_y}")
+        print(f"'{text}' at coordinates: {center_x}, {center_y}")
+        print(get_position())
     else:
         print(f"'{text}' not found on the screen")
-
+'''Mk2.1.py
 # Example usage
 time.sleep(5)
 click_text_on_screen('Next')
+'''
 

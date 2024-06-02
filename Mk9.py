@@ -14,6 +14,7 @@ import json
 import time
 import base64
 import easyocr
+import OCRclick
 import schedule
 import datetime
 import selenium
@@ -38,8 +39,9 @@ url = [
        'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=1e1495fe-a10c-42e8-aa51-808680e293c2&occurrenceDate=20240604'
        ]
 debug = False
+emuPsn = False
 
-def click_text_on_screen(text, delay=1):
+def move_text_on_screen(text, delay=1):
     def find_text_coordinates(image_path, text):
         # Create an EasyOCR reader
         reader = easyocr.Reader(['en'])
@@ -72,11 +74,16 @@ def click_text_on_screen(text, delay=1):
 
         # Move the mouse to the center of the bounding box and click
         pyautogui.moveTo(center_x, center_y, duration=delay)
-        pyautogui.click()
 
-        print(f"'{text}' button clicked at coordinates: {center_x}, {center_y}")
+        print(f"'{text}': {center_x}, {center_y}")
     else:
         print(f"'{text}' not found on the screen")
+
+def EmuWait():
+    if emuPsn:
+        time.sleep(r.uniform(0.5, 2.0))
+    else:
+        pass
 
 class BadmintonRegBot:
     def __init__(self, password):
@@ -125,28 +132,28 @@ class BadmintonRegBot:
     def navigate(self):
         driver = uc.Chrome()
         driver.maximize_window()
-        driver.get(url[1]) #add date funct
+        driver.get(url[0]) #add date funct
         #time.sleep(10)
         regiTag = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.bm-button.bm-book-button')))
         #regiTag = driver.find_element(By.CSS_SELECTOR, '.bm-button.bm-book-button')
         regiTag.click()
-        time.sleep(2)
+        EmuWait()
         LogInEmlIn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, 'emailid')))
         LogInEmlIn.send_keys(self.encry.decrypt(self.MySEmail))
-        time.sleep(2)
+        EmuWait()
         LogInPslIn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'loginradius-login-password')))
         LogInPslIn.send_keys(self.encry.decrypt(self.password))
-        time.sleep(2)
+        EmuWait()
         SignInBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'loginradius-validate-login')))
         SignInBtn.click()
-        time.sleep(2)
+        EmuWait()
         wait = WebDriverWait(driver, 20)
         try:
             memberBtn = driver.find_element(By.ID, wait.until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb)}']"))).get_attribute("for"))
         except:
             memberBtn = driver.find_element(By.ID, wait.until(EC.presence_of_element_located((By.XPATH, f"//label[text()='{self.encry.decrypt(self.regiMemb) + ' (You)'}']"))).get_attribute("for"))
         memberBtn.click()
-        time.sleep(2)
+        EmuWait()
         contBtn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Next']"))) 
         contBtn.click()
         '''nextBtn = WebDriverWait(driver, 2000).until(EC.element_to_be_clickable((By.XPATH, "//a[@title='Add to Cart' and @class='bm-button']")))
@@ -163,17 +170,19 @@ class BadmintonRegBot:
         time.sleep(1)
         pyautogui.moveTo(x, y+70)
         pyautogui.click()'''
-        click_text_on_screen('next')
+        #click_text_on_screen('next')
+        OCRclick.move_text_on_screen('next')
+        pyautogui.click()
 
-        time.sleep(2)
+        EmuWait()
         #checkout
         driver.switch_to.frame(WebDriverWait(driver, 2000).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'iframe.online-store'))))
         cardNameF = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.nameOnCard"][class*="floating-label transform empty"]')))
         cardNameF.send_keys(self.encry.decrypt(self.cardname))
-        time.sleep(2)
+        EmuWait()
         cardNumbF = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.cardNumber"][class*="floating-label transform empty"]')))
         cardNumbF.send_keys(self.encry.decrypt(self.cardnumb))
-        time.sleep(2)
+        EmuWait()
         select = Select(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, 'section'))).find_elements(By.TAG_NAME, 'select')[0])
         select.select_by_value(self.encry.decrypt(self.cardmont))
         select = Select(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, 'section'))).find_elements(By.TAG_NAME, 'select')[1])
@@ -184,16 +193,20 @@ class BadmintonRegBot:
         time.sleep(2)
         cardExpMo = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.expiryYear"][class*="floating-label transform empty"]')))
         selectEXM = Select(self.encry.decrypt(self.cardyear))'''
-        time.sleep(2)
-        try:
-            cardCVV = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: {}"][class*="floating-label transform empty"]')))
-            print('cvv selected')
-            cardCVV.send_keys(self.encry.decrypt(self.cardcvvb))
-            print('cvv success')
-        except:
+        EmuWait()
+        OCRclick.move_text_on_screen('CVV')
+        pyautogui.moveRel(None, 30)
+        pyautogui.click()
+        pyautogui.write(self.encry.decrypt(self.cardcvvb))
+        '''
+        cardCVV = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: {}, contextedId: \'cvv-number\', value: creditCard.cvv"][class*="floating-label transform empty"]')))
+        print('cvv selected')
+        cardCVV.send_keys(self.encry.decrypt(self.cardcvvb))
+        print('cvv success')'''
+        '''except:
             print(6)
-            pass
-        time.sleep(2)
+            pass'''
+        EmuWait()
 
         time.sleep(6000)
         driver.quit()
