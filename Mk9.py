@@ -7,7 +7,7 @@ depen = ['selenium',
        'schedule',
        'mouse'
        ]
-ModLoad.importDependencies(depen)
+#ModLoad.importDependencies(depen)
 
 import os
 import json
@@ -34,12 +34,12 @@ import ParisCrypts as crypt
 import Scheduler as sched
 
 url = [
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=a5b60ce9-5207-4cda-02e0-815e20577a92&occurrenceDate=20240602",
-       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=e3e9b298-c41a-4f8b-aa78-ecb125d95212&occurrenceDate=20240604",
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=e50e6837-9141-4ffe-a5fa-4c80c86c8cc3&occurrenceDate=20240605",
+       "https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=c11f380a-9567-402d-b1c2-f4c7ead23863&occurrenceDate=20240605",
        'https://cityofsurrey.perfectmind.com/23615/Clients/BookMe4LandingPages/Class?widgetId=b4059e75-9755-401f-a7b5-d7c75361420d&redirectedFromEmbededMode=False&classId=1e1495fe-a10c-42e8-aa51-808680e293c2&occurrenceDate=20240604'
        ]
 debug = False
-emuPsn = False
+emuPsn = True
 
 def move_text_on_screen(text, delay=1):
     def find_text_coordinates(image_path, text):
@@ -109,7 +109,12 @@ class BadmintonRegBot:
                 'cardExpM':self.encry.encrypt(str(input('Enter the expiry month(1-12): '))),
                 'cardExpY':self.encry.encrypt(str(input('Enter card expiry year(2XXX): '))),
                 'cardCvvB':self.encry.encrypt(str(input('Card Cvv (XXX): '))),
-                'regiMemb':self.encry.encrypt(str(input('Enter member: ')))
+                'regiMemb':self.encry.encrypt(str(input('Enter member: '))),
+                'billadrs':self.encry.encrypt(str(input('Enter your billing adress: '))),
+                'billcity':self.encry.encrypt(str(input('Enter your billing city: '))),
+                'billcout':self.encry.encrypt(str(input('Enter the country: '))),
+                'billprov':self.encry.encrypt(str(input('Enter the province: '))),
+                'pstlcode':self.encry.encrypt(str(input('Postal Code: ')))
             }
             with open(preset, 'w') as json_file:
                 json.dump(data, json_file, indent=4)
@@ -126,8 +131,11 @@ class BadmintonRegBot:
         self.cardyear = data['cardExpY']
         self.cardcvvb = data['cardCvvB']
         self.regiMemb = data['regiMemb']
-        if debug:
-           print(self.cardcvcb)
+        self.billAdrs = data['billadrs']
+        self.billCity = data['billcity']
+        self.billCout = data['billcout']
+        self.billProv = data['billprov']
+        self.pstlCode = data['pstlcode']
 
     def navigate(self):
         driver = uc.Chrome()
@@ -187,27 +195,40 @@ class BadmintonRegBot:
         select.select_by_value(self.encry.decrypt(self.cardmont))
         select = Select(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, 'section'))).find_elements(By.TAG_NAME, 'select')[1])
         select.select_by_value(self.encry.decrypt(self.cardyear))
-        '''
-        cardExpMo = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.expiryMonth"][class*="floating-label transform empty"]')))
-        selectEXM = Select(self.encry.decrypt(self.cardmont))
-        time.sleep(2)
-        cardExpMo = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: creditCard.expiryYear"][class*="floating-label transform empty"]')))
-        selectEXM = Select(self.encry.decrypt(self.cardyear))'''
         EmuWait()
-        OCRclick.move_text_on_screen('CVV')
+        '''OCRclick.move_text_on_screen('CVV')
         pyautogui.moveRel(None, 30)
         pyautogui.click()
         pyautogui.write(self.encry.decrypt(self.cardcvvb))
         '''
-        cardCVV = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-bind*="floatingLabel: {}, contextedId: \'cvv-number\', value: creditCard.cvv"][class*="floating-label transform empty"]')))
+        cardCVV = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="password"]')))
         print('cvv selected')
         cardCVV.send_keys(self.encry.decrypt(self.cardcvvb))
-        print('cvv success')'''
+        print('cvv success')
         '''except:
             print(6)
-            pass'''
+            pass'''#ADREWSS
         EmuWait()
-
+        ADREWSS = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="text"][data-bind*="floatingLabel: creditCard.billingAddress.street"][class*="floating-label transform empty"]')))
+        ADREWSS.send_keys(self.encry.decrypt(self.billAdrs))
+        EmuWait()
+        ADREWSS = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="text"][data-bind*="floatingLabel: creditCard.billingAddress.city"][class*="floating-label transform empty"]')))
+        ADREWSS.send_keys(self.encry.decrypt(self.billCity))
+        EmuWait()
+        select = Select(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, 'section'))).find_elements(By.TAG_NAME, 'select')[0])
+        select.select_by_value(self.encry.decrypt(self.cardmont))
+        select = Select(WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, 'section'))).find_elements(By.TAG_NAME, 'select')[1])
+        select.select_by_value(self.encry.decrypt(self.cardyear))
+        EmuWait()
+        '''OCRclick.move_text_on_screen('CVV')
+        pyautogui.moveRel(None, 30)
+        pyautogui.click()
+        pyautogui.write(self.encry.decrypt(self.cardcvvb))
+        '''
+        cardCVV = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="password"]')))
+        print('cvv selected')
+        cardCVV.send_keys(self.encry.decrypt(self.cardcvvb))
+        print('cvv success')
         time.sleep(6000)
         driver.quit()
     
@@ -241,5 +262,5 @@ class OverArch:
 r = OverArch()
 r.FridayBadmintonLoop()
 '''
-b = BadmintonRegBot('p')
+b = BadmintonRegBot(input('password: '))
 b.navigate()
